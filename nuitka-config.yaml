@@ -26,21 +26,21 @@
   anti-bloat:
     - description: 'remove sklearn dependency'
       replacements_plain:
-        'import sklearn.decomposition': '#'
+        'import sklearn.decomposition': ''
 
 - module-name: 'librosa.segment'
   anti-bloat:
     - description: 'remove sklearn dependency'
       replacements_plain:
-        'import sklearn': '#'
+        'import sklearn': ''
 
 - module-name: 'tacotron_cleaner.cleaners'
   anti-bloat:
     - description: 'remove unidecode dependency'
-      replacements:
-        'from unidecode import unidecode': '#'
-        'def convert_to_ascii(text):': '#'
-        'return unidecode(text)': '#'
+      replacements_plain:
+        'from unidecode import unidecode': ''
+        'def convert_to_ascii(text):': ''
+        'return unidecode(text)': ''
 
 - module-name: 'pysoundfile'
   data-files:
