@@ -1,9 +1,3 @@
-- module-name: 'torch.utils.data._typing'
-  anti-bloat:
-    - description: 'remove code which raise exception'
-      replacements_plain:
-        "'__init_subclass__': _dp_init_subclass": "'__init_subclass__': classmethod(_dp_init_subclass)"
-
 - module-name: 'numba.core.decorators'
   anti-bloat:
     - description: 'replace decorators'
@@ -27,12 +21,6 @@
 
         def jit_module(*args, **kwargs):
             pass
-
-- module-name: 'torch._jit_internal'
-  anti-bloat:
-    - description: 'remove warning'
-      replacements_plain:
-        'warnings.warn(f"Unable to retrieve source': '#'
 
 - module-name: 'librosa.decompose'
   anti-bloat:
@@ -59,12 +47,6 @@
     dest_path: '.'
     dirs:
       - '_soundfile_data'
-
-- module-name: 'llvmlite'
-  data-files:
-    dest_path: '.'
-    patterns:
-      - 'binding/*llvmlite.*'
 
 - module-name: 'espnet'
   data-files:
