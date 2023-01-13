@@ -261,9 +261,9 @@ jobs:
             exit "$EXIT_CODE"
           fi
 
-      #- name: Create download directory
-      #  shell: bash
-      #  run: mkdir -p download/
+      - name: Create download directory
+        shell: bash
+        run: mkdir -p download/
 
       # Install Ccache
       - name: Export Ccache url to calc hash

@@ -213,6 +213,11 @@ def generate_licenses() -> List[License]:
                 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
                 See the License for the specific language governing permissions and
                 limitations under the License."""
+            elif license.name.lower() == "audioread":
+                with urllib.request.urlopen(
+                    "https://raw.githubusercontent.com/beetbox/audioread/main/LICENSE"
+                ) as res:
+                    license.text = res.read().decode()
             else:
                 # ライセンスがpypiに無い
                 raise Exception(f"No License info provided for {license.name}")
