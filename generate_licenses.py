@@ -228,6 +228,11 @@ def generate_licenses() -> List[License]:
                     "https://raw.githubusercontent.com/ikegami-yukino/jaconv/master/LICENSE"
                 ) as res:
                     license.text = res.read().decode()
+            elif license.name.lower() == "espnet":
+                with urllib.request.urlopen(
+                    "https://raw.githubusercontent.com/voicevox-bridge/espnet/master/LICENSE"
+                ) as res:
+                    license.text = res.read().decode()
             elif license.name.lower() == "nvidia-cublas-cu11":
                 license.text = Path("docs/licenses/cublas/License.txt").read_text(
                     encoding="utf8"
