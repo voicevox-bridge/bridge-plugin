@@ -32,6 +32,9 @@
   anti-bloat:
     - description: 'remove sklearn dependency'
       replacements_plain:
+        'import sklearn.cluster': ''
+        'import sklearn.feature_extraction': ''
+        'import sklearn.neighbors': ''
         'import sklearn': ''
 
 - module-name: 'tacotron_cleaner.cleaners'
