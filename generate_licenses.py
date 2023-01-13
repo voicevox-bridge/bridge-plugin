@@ -218,6 +218,16 @@ def generate_licenses() -> List[License]:
                     "https://raw.githubusercontent.com/beetbox/audioread/main/LICENSE"
                 ) as res:
                     license.text = res.read().decode()
+            elif license.name.lower() == "ci-sdr":
+                with urllib.request.urlopen(
+                    "https://raw.githubusercontent.com/fgnt/ci_sdr/main/LICENSE"
+                ) as res:
+                    license.text = res.read().decode()
+            elif license.name.lower() == "jaconv":
+                with urllib.request.urlopen(
+                    "https://raw.githubusercontent.com/ikegami-yukino/jaconv/master/LICENSE"
+                ) as res:
+                    license.text = res.read().decode()
             else:
                 # ライセンスがpypiに無い
                 raise Exception(f"No License info provided for {license.name}")
