@@ -28,25 +28,25 @@
         def jit_module(*args, **kwargs):
             pass
 
-- module-name: 'torch._jit_internal':
+- module-name: 'torch._jit_internal'
   anti-bloat:
     - description: 'remove warning'
       replacements_plain:
         'warnings.warn(f"Unable to retrieve source': '#'
 
-- module-name: 'librosa.decompose':
+- module-name: 'librosa.decompose'
   anti-bloat:
     - description: 'remove sklearn dependency'
       replacements_plain:
         'import sklearn.decomposition': '#'
 
-- module-name: 'librosa.segment':
+- module-name: 'librosa.segment'
   anti-bloat:
     - description: 'remove sklearn dependency'
       replacements_plain:
         'import sklearn': '#'
 
-- module-name: 'tacotron_cleaner.cleaners':
+- module-name: 'tacotron_cleaner.cleaners'
   anti-bloat:
     - description: 'remove unidecode dependency'
       replacements:
@@ -60,7 +60,7 @@
     dirs:
       - '_soundfile_data'
 
-- module-name: 'llvmlite':
+- module-name: 'llvmlite'
   data-files:
     dest_path: '.'
     patterns:
