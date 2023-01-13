@@ -229,13 +229,21 @@ def generate_licenses() -> List[License]:
                 ) as res:
                     license.text = res.read().decode()
             elif license.name.lower() == "nvidia-cublas-cu11":
-                license.text = Path("docs/licenses/cublas/License.txt").read_text(encoding="utf8")
+                license.text = Path("docs/licenses/cublas/License.txt").read_text(
+                    encoding="utf8"
+                )
             elif license.name.lower() == "nvidia-cuda-nvrtc-cu11":
-                license.text = Path("docs/licenses/nvrtc/License.txt").read_text(encoding="utf8")
+                license.text = Path("docs/licenses/nvrtc/License.txt").read_text(
+                    encoding="utf8"
+                )
             elif license.name.lower() == "nvidia-cuda-runtime-cu11":
-                license.text = Path("docs/licenses/cuda_runtime/License.txt").read_text(encoding="utf8")
+                license.text = Path("docs/licenses/cuda_runtime/License.txt").read_text(
+                    encoding="utf8"
+                )
             elif license.name.lower() == "nvidia-cudnn-cu11":
-                license.text = Path("docs/licenses/cudnn/License.txt").read_text(encoding="utf8")
+                license.text = Path("docs/licenses/cudnn/License.txt").read_text(
+                    encoding="utf8"
+                )
             else:
                 # ライセンスがpypiに無い
                 raise Exception(f"No License info provided for {license.name}")
@@ -311,28 +319,28 @@ def generate_licenses() -> List[License]:
     # https://developer.nvidia.com/cuda-11-6-2-download-archive?target_os=Windows&target_arch=x86_64&target_version=10&target_type=exe_local # noqa: B950
     # https://developer.download.nvidia.com/compute/cuda/11.6.2/local_installers/cuda_11.6.2_511.65_windows.exe # noqa: B950
     # cuda_11.6.2_511.65_windows.exe (cuda_documentation/Doc/EULA.txt)
-    #licenses.append(
+    # licenses.append(
     #    License(
     #        name="CUDA Toolkit",
     #        version="11.6.2",
     #        license=None,
     #        text=Path("docs/licenses/cuda/EULA.txt").read_text(encoding="utf8"),
     #    )
-    #)
+    # )
     # cudnn
     # license text from
     # cuDNN v8.4.1 (May 27th, 2022), for CUDA 11.x, cuDNN Library for Windows
     # https://developer.nvidia.com/rdp/cudnn-archive # noqa: B950
     # https://developer.download.nvidia.com/compute/redist/cudnn/v8.4.1/local_installers/11.6/cudnn-windows-x86_64-8.4.1.50_cuda11.6-archive.zip # noqa: B950
     # cudnn-windows-x86_64-8.4.1.50_cuda11.6-archive.zip (cudnn-windows-x86_64-8.4.1.50_cuda11.6-archive/LICENSE) # noqa: B950
-    #licenses.append(
+    # licenses.append(
     #    License(
     #        name="cuDNN",
     #        version="8.4.1",
     #        license=None,
     #        text=Path("docs/licenses/cudnn/LICENSE").read_text(encoding="utf8"),
     #    )
-    #)
+    # )
 
     return licenses
 
