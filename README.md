@@ -1,31 +1,186 @@
-# VOICEVOX ENGINE
+# Bridge Plugin
 
-[![build](https://github.com/VOICEVOX/voicevox_engine/actions/workflows/build.yml/badge.svg)](https://github.com/VOICEVOX/voicevox_engine/actions/workflows/build.yml)
-[![releases](https://img.shields.io/github/v/release/VOICEVOX/voicevox_engine)](https://github.com/VOICEVOX/voicevox_engine/releases)
+[![build](https://github.com/voicevox-bridge/bridge-plugin/actions/workflows/build.yml/badge.svg)](https://github.com/voicevox-bridge/bridge-plugin/actions/workflows/build.yml)
+[![releases](https://img.shields.io/github/v/release/voicevox-bridge/bridge-plugin)](https://github.com/voicevox-bridge/bridge-plugin/releases)
 
-[![test](https://github.com/VOICEVOX/voicevox_engine/actions/workflows/test.yml/badge.svg)](https://github.com/VOICEVOX/voicevox_engine/actions/workflows/test.yml)
-[![Coverage Status](https://coveralls.io/repos/github/VOICEVOX/voicevox_engine/badge.svg)](https://coveralls.io/github/VOICEVOX/voicevox_engine)
+[![test](https://github.com/voicevox-bridge/bridge-plugin/actions/workflows/test.yml/badge.svg)](https://github.com/voicevox-bridge/bridge-plugin/actions/workflows/test.yml)
+[![Coverage Status](https://coveralls.io/repos/github/voicevox-bridge/bridge-plugin/badge.svg)](https://coveralls.io/github/voicevox-bridge/bridge-plugin)
 
-[![build-docker](https://github.com/VOICEVOX/voicevox_engine/actions/workflows/build-docker.yml/badge.svg)](https://github.com/VOICEVOX/voicevox_engine/actions/workflows/build-docker.yml)
-[![docker](https://img.shields.io/docker/pulls/voicevox/voicevox_engine)](https://hub.docker.com/r/voicevox/voicevox_engine)
+[ESPnet](https://github.com/espnet/espnet)を使用して作られたモデルを読み込み、[VOICEVOX](https://voicevox.hiroshiba.jp/) の互換のエンジンとして動作させる事ができるソフトウェアです。  
+このリポジトリは、[VOICEVOX Engine](https://github.com/VOICEVOX/voicevox_engine)のフォークです。  
 
-[VOICEVOX](https://voicevox.hiroshiba.jp/) のエンジンです。  
-実態は HTTP サーバーなので、リクエストを送信すればテキスト音声合成できます。
 
-（エディターは [VOICEVOX](https://github.com/VOICEVOX/voicevox/) 、
-コアは [VOICEVOX CORE](https://github.com/VOICEVOX/voicevox_core/) 、
-全体構成は [こちら](https://github.com/VOICEVOX/voicevox/blob/main/docs/%E5%85%A8%E4%BD%93%E6%A7%8B%E6%88%90.md) に詳細があります。）
+## ライセンス
+
+VOICEVOXの開発者である、[ヒホ氏](https://twitter.com/hiho_karuta)より、別ライセンスを取得して開発しています。  
+本ソフトウェアのライセンスは、[こちら](https://github.com/voicevox-bridge/bridge-plugin/blob/master/LICENSE)をご覧ください。  
+このソフトウェアで使用できる音声合成モデルに、「音声合成化を許諾している提供者の音声を元に作られていること」という制限を設けています。  
+音声合成化を拒絶する人もいることから、このような制限を設けさせていただきました。ご理解いただけますと幸いです。  
 
 ## ダウンロード
 
-[こちら](https://github.com/VOICEVOX/voicevox_engine/releases/latest)から対応するエンジンをダウンロードしてください。
+[こちら](https://github.com/voicevox-bridge/bridge-plugin/releases/latest)から対応するエンジンをダウンロードしてください。
+
+## 使用方法
+
+ダウンロードして解凍した先に、以下のファイル・フォルダを配置してください。
+
+- bridge_config.yaml
+- modelフォルダ（モデルの置き場所）
+- speaker_infoフォルダ（初期配置のものはダミーなので置き換えが必要）
+
+`bridge_config.yaml`は、Bridge Pluginの設定ファイルです。  
+現時点では、VOICEVOX Bridgeの`engine_config.yaml`と互換性があります。  
+（ただし、`name`、`port`、`engine_uuid`、`engine_version`、`min_vvb_version`、`speakers/styles`内の`sampling_rate`は無視されます）  
+初期状態のBridge Pluginのフォルダには、ダミーのspeaker_infoが配置されています。  
+これを使用するモデルに合ったものに置き換えてください。（VOICEVOX Engineと同じ構造です）  
+speaker_infoフォルダ内のUUIDは、`bridge_config.yaml`で設定した`speaker_uuid`と揃えてください。  
+次に、`engine_manifest_assets`フォルダ内の以下のファイルを書き換えてください。  
+
+- icon.png (エンジンのアイコン)
+- terms_of_service.md
+- update_infos.json
+
+最後に、`engine_manifest.json`を書き換えてください。  
+書き換えが必要な項目は以下の通りです。  
+
+- name
+- brand_name
+- uuid
+- version
+- url
+- port
+- default_sampling_rate
+
+<details>
+<summary>bridge_config.yamlの例</summary>
+
+[BridgeConfig.py](https://github.com/voicevox-bridge/bridge-plugin/blob/master/voicevox_engine/bridge_config/BridgeConfig.py)も参照してください。  
+
+```yaml
+gloal_style_setting: &gloal_style_setting
+  sampling_rate: 44100
+  g2p: pyopenjtalk_accent_with_pause
+
+global_tts_inference_init_args: &global_tts_inference_init_args
+  speed_control_alpha: 1.0
+  noise_scale: 0.333
+  noise_scale_dur: 0.333
+
+global_token_id_converter_init_args: &global_token_id_converter_init_args
+  token_list:
+    - <blank>
+    - <unk>
+    - '1'
+    - '2'
+    - '0'
+    - '3'
+    - '4'
+    - '-1'
+    - '5'
+    - a
+    - o
+    - '-2'
+    - i
+    - '-3'
+    - u
+    - e
+    - k
+    - n
+    - t
+    - '6'
+    - r
+    - '-4'
+    - s
+    - N
+    - m
+    - pau
+    - '7'
+    - sh
+    - d
+    - g
+    - w
+    - '8'
+    - U
+    - '-5'
+    - I
+    - cl
+    - h
+    - y
+    - b
+    - '9'
+    - j
+    - ts
+    - ch
+    - '-6'
+    - z
+    - p
+    - '-7'
+    - f
+    - ky
+    - ry
+    - '-8'
+    - gy
+    - '-9'
+    - hy
+    - ny
+    - '-10'
+    - by
+    - my
+    - '-11'
+    - '-12'
+    - '-13'
+    - py
+    - '-14'
+    - '-15'
+    - v
+    - '10'
+    - '-16'
+    - '-17'
+    - '11'
+    - '-21'
+    - '-20'
+    - '12'
+    - '-19'
+    - '13'
+    - '-18'
+    - '14'
+    - dy
+    - '15'
+    - ty
+    - '-22'
+    - '16'
+    - '18'
+    - '19'
+    - '17'
+    - <sos/eos>
+
+
+host: '127.0.0.1'
+speakers:
+  - name: DUMMY
+    speaker_uuid: aa33c99b-a43b-49b0-a2c8-6a81922f8213
+    version: 0.0.1
+    styles:
+      - name: ノーマル
+        id: 0
+        <<: *gloal_style_setting
+        tts_inference_init_args:
+          train_config: model/DUMMY_config.yaml
+          model_file: model/DUMMY_model.pth
+          <<: *global_tts_inference_init_args
+        token_id_converter_init_args:
+          <<: *global_token_id_converter_init_args
+```
+
+</details>
 
 ## API ドキュメント
 
-[API ドキュメント](https://voicevox.github.io/voicevox_engine/api/)をご参照ください。
+[VOICEVOX公式 API ドキュメント](https://voicevox.github.io/voicevox_engine/api/)をご参照ください。  
+（いくつか非互換の機能がありますのでご注意ください）  
 
 VOICEVOX エンジンもしくはエディタを起動した状態で http://localhost:50021/docs にアクセスすると、起動中のエンジンのドキュメントも確認できます。  
-今後の方針などについては [VOICEVOX 音声合成エンジンとの連携](./docs/VOICEVOX音声合成エンジンとの連携.md) も参考になるかもしれません。
 
 リクエスト・レスポンスの文字コードはすべて UTF-8 です。
 
@@ -206,47 +361,6 @@ curl -s \
 - `id`は重複してはいけません
 - エンジン起動後にファイルを書き換えるとエンジンに反映されます
 
-### 2 人の話者でモーフィングするサンプルコード
-
-`/synthesis_morphing`では、2 人の話者でそれぞれ合成された音声を元に、モーフィングした音声を生成します。
-
-```bash
-echo -n "モーフィングを利用することで、２つの声を混ぜることができます。" > text.txt
-
-curl -s \
-    -X POST \
-    "localhost:50021/audio_query?speaker=0"\
-    --get --data-urlencode text@text.txt \
-    > query.json
-
-# 元の話者での合成結果
-curl -s \
-    -H "Content-Type: application/json" \
-    -X POST \
-    -d @query.json \
-    "localhost:50021/synthesis?speaker=0" \
-    > audio.wav
-
-export MORPH_RATE=0.5
-
-# 話者2人分の音声合成+WORLDによる音声分析が入るため時間が掛かるので注意
-curl -s \
-    -H "Content-Type: application/json" \
-    -X POST \
-    -d @query.json \
-    "localhost:50021/synthesis_morphing?base_speaker=0&target_speaker=1&morph_rate=$MORPH_RATE" \
-    > audio.wav
-
-export MORPH_RATE=0.9
-
-# query、base_speaker、target_speakerが同じ場合はキャッシュが使用されるため比較的高速に生成される
-curl -s \
-    -H "Content-Type: application/json" \
-    -X POST \
-    -d @query.json \
-    "localhost:50021/synthesis_morphing?base_speaker=0&target_speaker=1&morph_rate=$MORPH_RATE" \
-    > audio.wav
-```
 
 ### 話者の追加情報を取得するサンプルコード
 
@@ -260,12 +374,6 @@ curl -s -X GET "localhost:50021/speaker_info?speaker_uuid=7ffcb7ce-00ec-4bdc-82c
     > portrait.png
 ```
 
-### キャンセル可能な音声合成
-
-`/cancellable_synthesis`では通信を切断した場合に即座に計算リソースが開放されます。  
-(`/synthesis`では通信を切断しても最後まで音声合成の計算が行われます)  
-この API は実験的機能であり、エンジン起動時に引数で`--enable_cancellable_synthesis`を指定しないと有効化されません。  
-音声合成に必要なパラメータは`/synthesis`と同様です。
 
 ### CORS設定
 
@@ -283,22 +391,6 @@ VOICEVOXではセキュリティ保護のため`localhost`・`127.0.0.1`・`app:
 ## アップデート
 
 エンジンディレクトリ内にあるファイルを全て消去し、新しいものに置き換えてください。
-
-## Docker イメージ
-
-### CPU
-
-```bash
-docker pull voicevox/voicevox_engine:cpu-ubuntu20.04-latest
-docker run --rm -it -p '127.0.0.1:50021:50021' voicevox/voicevox_engine:cpu-ubuntu20.04-latest
-```
-
-### GPU
-
-```bash
-docker pull voicevox/voicevox_engine:nvidia-ubuntu20.04-latest
-docker run --rm --gpus all -p '127.0.0.1:50021:50021' voicevox/voicevox_engine:nvidia-ubuntu20.04-latest
-```
 
 ## 貢献者の方へ
 
@@ -326,11 +418,11 @@ python -m pip install -r requirements.txt
 python run.py --help
 ```
 
-```bash
+<!--```bash
 # 製品版 VOICEVOX でサーバーを起動
 VOICEVOX_DIR="C:/path/to/voicevox" # 製品版 VOICEVOX ディレクトリのパス
 python run.py --voicevox_dir=$VOICEVOX_DIR
-```
+```-->
 
 <!-- 差し替え可能な音声ライブラリまたはその仕様が公開されたらコメントを外す
 ```bash
@@ -349,52 +441,6 @@ python run.py --enable_mock
 # ログをUTF8に変更
 python run.py --output_log_utf8
 # もしくは VV_OUTPUT_LOG_UTF8=1 python run.py
-```
-
-### CPU スレッド数を指定する
-
-CPU スレッド数が未指定の場合は、論理コア数の半分か物理コア数が使われます。（殆どの CPU で、これは全体の処理能力の半分です）  
-もし IaaS 上で実行していたり、専用サーバーで実行している場合など、  
-エンジンが使う処理能力を調節したい場合は、CPU スレッド数を指定することで実現できます。
-
-- 実行時引数で指定する
-
-  ```bash
-  python run.py --voicevox_dir=$VOICEVOX_DIR --cpu_num_threads=4
-  ```
-
-- 環境変数で指定する
-  ```bash
-  export VV_CPU_NUM_THREADS=4
-  python run.py --voicevox_dir=$VOICEVOX_DIR
-  ```
-
-### 過去のバージョンのコアを使う
-VOICEVOX Core 0.5.4以降のコアを使用する事が可能です。  
-Macでのlibtorch版コアのサポートはしていません。
-
-#### 過去のバイナリを指定する
-製品版VOICEVOXもしくはコンパイル済みエンジンのディレクトリを`--voicevox_dir`引数で指定すると、そのバージョンのコアが使用されます。
-```bash
-python run.py --voicevox_dir="/path/to/voicevox"
-```
-Macでは、`DYLD_LIBRARY_PATH`の指定が必要です。
-```bash
-DYLD_LIBRARY_PATH="/path/to/voicevox" python run.py --voicevox_dir="/path/to/voicevox"
-```
-
-#### 音声ライブラリを直接指定する
-[VOICEVOX Coreのzipファイル](https://github.com/VOICEVOX/voicevox_core/releases)を解凍したディレクトリを`--voicelib_dir`引数で指定します。  
-また、コアのバージョンに合わせて、[libtorch](https://pytorch.org/)や[onnxruntime](https://github.com/microsoft/onnxruntime)のディレクトリを`--runtime_dir`引数で指定します。  
-ただし、システムの探索パス上にlibtorch、onnxruntimeがある場合、`--runtime_dir`引数の指定は不要です。  
-`--voicelib_dir`引数、`--runtime_dir`引数は複数回使用可能です。   
-APIエンドポイントでコアのバージョンを指定する場合は`core_version`引数を指定してください。（未指定の場合は最新のコアが使用されます）
-```bash
-python run.py --voicelib_dir="/path/to/voicevox_core" --runtime_dir="/path/to/libtorch_or_onnx"
-```
-Macでは、`--runtime_dir`引数の代わりに`DYLD_LIBRARY_PATH`の指定が必要です。
-```bash
-DYLD_LIBRARY_PATH="/path/to/onnx" python run.py --voicelib_dir="/path/to/voicevox_core"
 ```
 
 ## コードフォーマット
@@ -422,22 +468,6 @@ pysen run format lint
 python make_docs.py
 ```
 
-## ビルド
-
-この方法でビルドしたものは、リリースで公開されているものとは異なります。
-また、GPUで利用するにはcuDNNやCUDA、DirectMLなどのライブラリが追加で必要となります。
-
-```bash
-python -m pip install -r requirements-dev.txt
-
-python generate_licenses.py > licenses.json
-
-# ビルド自体はLIBCORE_PATH及びLIBONNXRUNTIME_PATHの指定がなくても可能です
-LIBCORE_PATH="/path/to/libcore" \
-    LIBONNXRUNTIME_PATH="/path/to/libonnxruntime" \
-    pyinstaller --noconfirm run.spec
-```
-
 ## 依存関係
 
 ### 更新
@@ -456,19 +486,11 @@ poetry update `パッケージ名`
 poetry update # 全部更新
 
 # requirements.txtの更新
-poetry export --without-hashes -o requirements.txt # こちらを更新する場合は下２つも更新する必要があります。
+poetry export --without-hashes -o requirements.txt # こちらを更新する場合は下３つも更新する必要があります。
 poetry export --without-hashes --with dev -o requirements-dev.txt
 poetry export --without-hashes --with test -o requirements-test.txt
+poetry export --without-hashes --with license -o requirements-license.txt
 ```
-
-### ライセンス
-
-依存ライブラリは「コアビルド時にリンクして一体化しても、コア部のコード非公開 OK」なライセンスを持つ必要があります。  
-主要ライセンスの可否は以下の通りです。
-
-- MIT/Apache/BSD-3: OK
-- LGPL: OK （コアと動的分離されているため）
-- GPL: NG （全関連コードの公開が必要なため）
 
 ## ユーザー辞書の更新について
 
@@ -477,17 +499,3 @@ poetry export --without-hashes --with test -o requirements-test.txt
 ```bash
 python -c "import pyopenjtalk; pyopenjtalk.create_user_dict('default.csv','user.dic')"
 ```
-
-## GitHub Actions
-
-### Secrets
-
-| name               | description                                                             |
-| :----------------- | :---------------------------------------------------------------------- |
-| DOCKERHUB_USERNAME | Docker Hub ユーザ名                                                     |
-| DOCKERHUB_TOKEN    | [Docker Hub アクセストークン](https://hub.docker.com/settings/security) |
-
-## ライセンス
-
-LGPL v3 と、ソースコードの公開が不要な別ライセンスのデュアルライセンスです。
-別ライセンスを取得したい場合は、ヒホ（twitter: @hiho_karuta）に求めてください。

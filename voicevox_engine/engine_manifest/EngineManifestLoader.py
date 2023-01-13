@@ -1,12 +1,18 @@
 import json
 from base64 import b64encode
 from pathlib import Path
+from typing import Tuple
 
+from ..utility import engine_root
 from .EngineManifest import EngineManifest, LicenseInfo, UpdateInfo
 
 
 class EngineManifestLoader:
-    def __init__(self, manifest_path: Path, root_dir: Path):
+    def __init__(
+        self,
+        manifest_path: Path = engine_root() / "engine_manifest.json",  # noqa: B008
+        root_dir: Path = engine_root(),  # noqa: B008
+    ):
         self.manifest_path = manifest_path
         self.root_dir = root_dir
 
@@ -46,3 +52,7 @@ class EngineManifestLoader:
             },
         )
         return manifest
+
+    def load_info_for_bridge_config(self) -> Tuple[str, int, int]:
+        manifest = json.loads(self.manifest_path.read_text(encoding="utf-8"))
+        return manifest["version"], manifest["port"], manifest["default_sampling_rate"]

@@ -56,29 +56,13 @@ def generate_licenses() -> List[License]:
             )
         )
 
-    # VOICEVOX CORE
-    with urllib.request.urlopen(
-        "https://raw.githubusercontent.com/VOICEVOX/voicevox_core/main/LICENSE"
-    ) as res:
+    with open("LICENSE", mode="r", encoding="utf-8") as f:
         licenses.append(
             License(
-                name="VOICEVOX CORE",
+                name="Bridge Plugin",
                 version=None,
-                license="MIT license",
-                text=res.read().decode(),
-            )
-        )
-
-    # VOICEVOX ENGINE
-    with urllib.request.urlopen(
-        "https://raw.githubusercontent.com/VOICEVOX/voicevox_engine/master/LGPL_LICENSE"
-    ) as res:
-        licenses.append(
-            License(
-                name="VOICEVOX ENGINE",
-                version=None,
-                license="LGPL license",
-                text=res.read().decode(),
+                license="Bridge Plugin License",
+                text=f.read(),
             )
         )
 
@@ -104,19 +88,6 @@ def generate_licenses() -> List[License]:
                 name="PyTorch",
                 version="1.9.0",
                 license="BSD-style license",
-                text=res.read().decode(),
-            )
-        )
-
-    # onnxruntime
-    with urllib.request.urlopen(
-        "https://raw.githubusercontent.com/microsoft/onnxruntime/master/LICENSE"
-    ) as res:
-        licenses.append(
-            License(
-                name="ONNX Runtime",
-                version="1.13.1",
-                license="MIT license",
                 text=res.read().decode(),
             )
         )
@@ -162,18 +133,16 @@ def generate_licenses() -> List[License]:
             license=license_json["License"],
             text=license_json["LicenseText"],
         )
+        if license.name.lower() in ["unidecode", "distance"]:
+            # 自動ビルド時に除外しているので反映させない
+            continue
         # FIXME: assert license type
         if license.text == "UNKNOWN":
             if license.name.lower() == "core" and license.version == "0.0.0":
                 continue
-            elif license.name.lower() == "future":
+            elif license.name.lower() == "nuitka":
                 with urllib.request.urlopen(
-                    "https://raw.githubusercontent.com/PythonCharmers/python-future/master/LICENSE.txt"  # noqa: B950
-                ) as res:
-                    license.text = res.read().decode()
-            elif license.name.lower() == "pefile":
-                with urllib.request.urlopen(
-                    "https://raw.githubusercontent.com/erocarrera/pefile/master/LICENSE"  # noqa: B950
+                    "https://raw.githubusercontent.com/Nuitka/Nuitka/develop/LICENSE.txt"
                 ) as res:
                     license.text = res.read().decode()
             elif license.name.lower() == "pyopenjtalk":
@@ -216,6 +185,34 @@ def generate_licenses() -> List[License]:
                     "https://raw.githubusercontent.com/gsnedders/python-webencodings/fa2cb5d75ab41e63ace691bc0825d3432ba7d694/LICENSE"
                 ) as res:
                     license.text = res.read().decode()
+            elif license.name.lower() == "espnet-tts-frontend":
+                with urllib.request.urlopen(
+                    "https://raw.githubusercontent.com/espnet/espnet/master/LICENSE"
+                ) as res:
+                    license.text = res.read().decode()
+            elif license.name.lower() == "jamo":
+                with urllib.request.urlopen(
+                    "https://raw.githubusercontent.com/JDongian/python-jamo/master/LICENSE"
+                ) as res:
+                    license.text = res.read().decode()
+            elif license.name.lower() == "sentencepiece":
+                with urllib.request.urlopen(
+                    "https://raw.githubusercontent.com/google/sentencepiece/master/LICENSE"
+                ) as res:
+                    license.text = res.read().decode()
+            elif license.name.lower() == "torch-complex":
+                # https://github.com/kamo-naoyuki/pytorch_complex/blob/master/setup.py
+                # Apache Software Licenseであることが明記されているのでこれに従う
+                license.text = """Copyright 2021 Naoyuki Kamo
+                Licensed under the Apache License, Version 2.0 (the "License");
+                you may not use this file except in compliance with the License.
+                You may obtain a copy of the License at
+                    http://www.apache.org/licenses/LICENSE-2.0
+                Unless required by applicable law or agreed to in writing, software
+                distributed under the License is distributed on an "AS IS" BASIS,
+                WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+                See the License for the specific language governing permissions and
+                limitations under the License."""
             else:
                 # ライセンスがpypiに無い
                 raise Exception(f"No License info provided for {license.name}")

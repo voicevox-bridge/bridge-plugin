@@ -3,14 +3,12 @@ import argparse
 # import asyncio
 import base64
 import json
-import multiprocessing
 import os
 import re
 import sys
 import traceback
 import zipfile
 from distutils.version import LooseVersion
-from functools import lru_cache
 from io import TextIOWrapper
 from pathlib import Path
 from tempfile import NamedTemporaryFile, TemporaryFile
@@ -28,7 +26,7 @@ from starlette.background import BackgroundTask
 from starlette.responses import FileResponse
 
 from voicevox_engine import __version__
-from voicevox_engine.cancellable_engine import CancellableEngine
+from voicevox_engine.bridge_config import BridgeConfigLoader
 from voicevox_engine.engine_manifest import EngineManifestLoader
 from voicevox_engine.engine_manifest.EngineManifest import EngineManifest
 from voicevox_engine.kana_parser import create_kana, parse_kana
@@ -43,10 +41,6 @@ from voicevox_engine.model import (
     SupportedDevicesInfo,
     UserDictWord,
     WordTypes,
-)
-from voicevox_engine.morphing import synthesis_morphing
-from voicevox_engine.morphing import (
-    synthesis_morphing_parameter as _synthesis_morphing_parameter,
 )
 from voicevox_engine.part_of_speech_data import MAX_PRIORITY, MIN_PRIORITY
 from voicevox_engine.preset import Preset, PresetLoader
@@ -109,15 +103,18 @@ def generate_app(
     root_dir: Optional[Path] = None,
     cors_policy_mode: CorsPolicyMode = CorsPolicyMode.localapps,
     allow_origin: Optional[List[str]] = None,
+    speaker_info_root_dir: Optional[Path] = None,
 ) -> FastAPI:
     if root_dir is None:
         root_dir = engine_root()
+    if speaker_info_root_dir is None:
+        speaker_info_root_dir = engine_root()
 
     default_sampling_rate = synthesis_engines[latest_core_version].default_sampling_rate
 
     app = FastAPI(
-        title="VOICEVOX Engine",
-        description="VOICEVOXの音声合成エンジンです。",
+        title="Bridge Plugin",
+        description="VOICEVOX互換の音声合成エンジンです。",
         version=__version__,
     )
 
@@ -175,11 +172,6 @@ def generate_app(
     )
 
     setting_ui_template = Jinja2Templates(directory=engine_root() / "ui_template")
-
-    # キャッシュを有効化
-    # モジュール側でlru_cacheを指定するとキャッシュを制御しにくいため、HTTPサーバ側で指定する
-    # TODO: キャッシュを管理するモジュール側API・HTTP側APIを用意する
-    synthesis_morphing_parameter = lru_cache(maxsize=4)(_synthesis_morphing_parameter)
 
     # @app.on_event("startup")
     # async def start_catch_disconnection():
@@ -411,24 +403,9 @@ def generate_app(
         request: Request,
         core_version: Optional[str] = None,
     ):
-        if not args.enable_cancellable_synthesis:
-            raise HTTPException(
-                status_code=404,
-                detail="実験的機能はデフォルトで無効になっています。使用するには引数を指定してください。",
-            )
-        f_name = cancellable_engine._synthesis_impl(
-            query=query,
-            speaker_id=speaker,
-            request=request,
-            core_version=core_version,
-        )
-        if f_name == "":
-            raise HTTPException(status_code=422, detail="不明なバージョンです")
-
-        return FileResponse(
-            f_name,
-            media_type="audio/wav",
-            background=BackgroundTask(delete_file, f_name),
+        raise HTTPException(
+            status_code=404,
+            detail="このエンジンではこの機能を使用することができません。",
         )
 
     @app.post(
@@ -507,34 +484,9 @@ def generate_app(
         指定された2人の話者で音声を合成、指定した割合でモーフィングした音声を得ます。
         モーフィングの割合は`morph_rate`で指定でき、0.0でベースの話者、1.0でターゲットの話者に近づきます。
         """
-        engine = get_engine(core_version)
-
-        # 生成したパラメータはキャッシュされる
-        morph_param = synthesis_morphing_parameter(
-            engine=engine,
-            query=query,
-            base_speaker=base_speaker,
-            target_speaker=target_speaker,
-        )
-
-        morph_wave = synthesis_morphing(
-            morph_param=morph_param,
-            morph_rate=morph_rate,
-            output_stereo=query.outputStereo,
-        )
-
-        with NamedTemporaryFile(delete=False) as f:
-            soundfile.write(
-                file=f,
-                data=morph_wave,
-                samplerate=morph_param.fs,
-                format="WAV",
-            )
-
-        return FileResponse(
-            f.name,
-            media_type="audio/wav",
-            background=BackgroundTask(delete_file, f.name),
+        raise HTTPException(
+            status_code=404,
+            detail="このエンジンではこの機能を使用することができません。",
         )
 
     @app.post(
@@ -628,22 +580,26 @@ def generate_app(
             raise HTTPException(status_code=404, detail="該当する話者が見つかりません")
 
         try:
-            policy = (root_dir / f"speaker_info/{speaker_uuid}/policy.md").read_text(
-                "utf-8"
-            )
+            policy = (
+                speaker_info_root_dir / f"speaker_info/{speaker_uuid}/policy.md"
+            ).read_text("utf-8")
             portrait = b64encode_str(
-                (root_dir / f"speaker_info/{speaker_uuid}/portrait.png").read_bytes()
+                (
+                    speaker_info_root_dir / f"speaker_info/{speaker_uuid}/portrait.png"
+                ).read_bytes()
             )
             style_infos = []
             for style in speaker["styles"]:
                 id = style["id"]
                 icon = b64encode_str(
                     (
-                        root_dir / f"speaker_info/{speaker_uuid}/icons/{id}.png"
+                        speaker_info_root_dir
+                        / f"speaker_info/{speaker_uuid}/icons/{id}.png"
                     ).read_bytes()
                 )
                 style_portrait_path = (
-                    root_dir / f"speaker_info/{speaker_uuid}/portraits/{id}.png"
+                    speaker_info_root_dir
+                    / f"speaker_info/{speaker_uuid}/portraits/{id}.png"
                 )
                 style_portrait = (
                     b64encode_str(style_portrait_path.read_bytes())
@@ -653,7 +609,7 @@ def generate_app(
                 voice_samples = [
                     b64encode_str(
                         (
-                            root_dir
+                            speaker_info_root_dir
                             / "speaker_info/{}/voice_samples/{}_{}.wav".format(
                                 speaker_uuid, id, str(j + 1).zfill(3)
                             )
@@ -946,7 +902,6 @@ def generate_app(
 
 
 if __name__ == "__main__":
-    multiprocessing.freeze_support()
 
     output_log_utf8 = os.getenv("VV_OUTPUT_LOG_UTF8", default="")
     if output_log_utf8 == "1":
@@ -960,29 +915,30 @@ if __name__ == "__main__":
     default_cors_policy_mode = CorsPolicyMode.localapps
 
     parser = argparse.ArgumentParser(description="VOICEVOX のエンジンです。")
-    parser.add_argument(
-        "--host", type=str, default="127.0.0.1", help="接続を受け付けるホストアドレスです。"
-    )
-    parser.add_argument("--port", type=int, default=50021, help="接続を受け付けるポート番号です。")
+    parser.add_argument("--host", type=str, default=None, help="接続を受け付けるホストアドレスです。")
+    parser.add_argument("--port", type=int, default=None, help="接続を受け付けるポート番号です。")
     parser.add_argument(
         "--use_gpu", action="store_true", help="指定するとGPUを使って音声合成するようになります。"
     )
     parser.add_argument(
-        "--voicevox_dir", type=Path, default=None, help="VOICEVOXのディレクトリパスです。"
+        "--voicevox_dir",
+        type=Path,
+        default=None,
+        help="この引数は無視されます。（VOICEVOX Engineとの互換性のために維持されています。）",
     )
     parser.add_argument(
         "--voicelib_dir",
         type=Path,
         default=None,
         action="append",
-        help="VOICEVOX COREのディレクトリパスです。",
+        help="この引数は無視されます。（VOICEVOX Engineとの互換性のために維持されています。）",
     )
     parser.add_argument(
         "--runtime_dir",
         type=Path,
         default=None,
         action="append",
-        help="VOICEVOX COREで使用するライブラリのディレクトリパスです。",
+        help="この引数は無視されます。（VOICEVOX Engineとの互換性のために維持されています。）",
     )
     parser.add_argument(
         "--enable_mock",
@@ -992,22 +948,18 @@ if __name__ == "__main__":
     parser.add_argument(
         "--enable_cancellable_synthesis",
         action="store_true",
-        help="指定すると音声合成を途中でキャンセルできるようになります。",
+        help="この引数は無視されます。（VOICEVOX Engineとの互換性のために維持されています。）",
     )
     parser.add_argument("--init_processes", type=int, default=2)
     parser.add_argument(
         "--load_all_models", action="store_true", help="指定すると起動時に全ての音声合成モデルを読み込みます。"
     )
 
-    # 引数へcpu_num_threadsの指定がなければ、環境変数をロールします。
-    # 環境変数にもない場合は、Noneのままとします。
-    # VV_CPU_NUM_THREADSが空文字列でなく数値でもない場合、エラー終了します。
     parser.add_argument(
         "--cpu_num_threads",
         type=int,
-        default=os.getenv("VV_CPU_NUM_THREADS") or None,
-        help="音声合成を行うスレッド数です。指定しないと、代わりに環境変数VV_CPU_NUM_THREADSの値が使われます。"
-        "VV_CPU_NUM_THREADSが空文字列でなく数値でもない場合はエラー終了します。",
+        default=None,
+        help="この引数は無視されます。（VOICEVOX Engineとの互換性のために維持されています。）",
     )
 
     parser.add_argument(
@@ -1035,30 +987,32 @@ if __name__ == "__main__":
         "--setting_file", type=Path, default=USER_SETTING_PATH, help="設定ファイルを指定できます。"
     )
 
+    parser.add_argument(
+        "--bridge_config_dir",
+        type=Path,
+        default=engine_root(),
+        help="Bridge Configファイルのあるディレクトリです。",
+    )
+
     args = parser.parse_args()
+
+    bridge_config_loader = BridgeConfigLoader(args.bridge_config_dir)
 
     if args.output_log_utf8:
         set_output_log_utf8()
 
-    cpu_num_threads: Optional[int] = args.cpu_num_threads
-
     synthesis_engines = make_synthesis_engines(
         use_gpu=args.use_gpu,
-        voicelib_dirs=args.voicelib_dir,
-        voicevox_dir=args.voicevox_dir,
-        runtime_dirs=args.runtime_dir,
-        cpu_num_threads=cpu_num_threads,
         enable_mock=args.enable_mock,
         load_all_models=args.load_all_models,
+        bridge_config_loader=bridge_config_loader,
     )
     assert len(synthesis_engines) != 0, "音声合成エンジンがありません。"
     latest_core_version = str(max([LooseVersion(ver) for ver in synthesis_engines]))
 
     cancellable_engine = None
-    if args.enable_cancellable_synthesis:
-        cancellable_engine = CancellableEngine(args)
 
-    root_dir = args.voicevox_dir if args.voicevox_dir is not None else engine_root()
+    root_dir = engine_root()
 
     setting_loader = SettingLoader(args.setting_file)
 
@@ -1074,6 +1028,10 @@ if __name__ == "__main__":
         args.allow_origin if args.allow_origin is not None else settings.allow_origin
     )
 
+    bridge_config = bridge_config_loader.load_config_file()
+    host = bridge_config.host if args.host is None else args.host
+    port = bridge_config.port if args.port is None else args.port
+
     uvicorn.run(
         generate_app(
             synthesis_engines,
@@ -1082,7 +1040,8 @@ if __name__ == "__main__":
             root_dir=root_dir,
             cors_policy_mode=cors_policy_mode,
             allow_origin=allow_origin,
+            speaker_info_root_dir=args.bridge_config_dir,
         ),
-        host=args.host,
-        port=args.port,
+        host=host,
+        port=port,
     )

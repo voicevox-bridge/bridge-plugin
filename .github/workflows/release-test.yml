@@ -33,18 +33,18 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-20.04
-            target: linux-cpu
-          - os: ubuntu-20.04
-            target: linux-nvidia
-          - os: macos-11
-            target: macos-x64
+          #- os: ubuntu-20.04
+          #  target: linux-cpu
+          #- os: ubuntu-20.04
+          #  target: linux-nvidia
+          #- os: macos-11
+          #  target: macos-x64
           - os: windows-2019
             target: windows-cpu
-          - os: windows-2019
-            target: windows-nvidia
-          - os: windows-2019
-            target: windows-directml
+          #- os: windows-2019
+          #  target: windows-nvidia
+          #- os: windows-2019
+          #  target: windows-directml
 
     runs-on: ${{ matrix.os }}
 

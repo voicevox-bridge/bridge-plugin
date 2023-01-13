@@ -4,8 +4,9 @@
 *.build
 /build
 /cache
-## Artifact of generate_licenses.py
+## Artifact of generating licenses
 /licenses.json
+licenses_venv/
 
 # Copied from `https://github.com/github/gitignore/blob/main/Python.gitignore` @2022-01-10
 # Byte-compiled / optimized / DLL files
@@ -35,6 +36,12 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
 
 # Installer logs
 pip-log.txt
