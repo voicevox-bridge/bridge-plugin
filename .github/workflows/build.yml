@@ -451,6 +451,8 @@ jobs:
 
       - name: Build run.py with nuitka
         shell: bash
+        env:
+          NUITKA_CACHE_DIR: ${{ matrix.nuitka_cache_path }}
         run: |
           set -eux
 
