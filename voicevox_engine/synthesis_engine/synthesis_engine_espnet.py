@@ -260,39 +260,39 @@ class SynthesisEngineESPNet(SynthesisEngineBase):
                 0,
             )
 
-            # WORLDで加工する
-            fs = query.outputSamplingRate
+        # WORLDで加工する
+        fs = query.outputSamplingRate
 
-            # 音高
-            onkou = (query.pitchScale * 3) + 1
+        # 音高
+        onkou = (query.pitchScale * 3) + 1
 
-            # 基本周波数の抽出
-            _f0, t = pyworld.dio(wave, fs)
-            f0 = pyworld.stonemask(wave, _f0, t, fs)
-            sp = pyworld.cheaptrick(wave, f0, t, fs)
-            ap = pyworld.d4c(
-                wave,
-                f0,
-                t,
-                fs,
-                # threshold=0.50   # voiced/unvoiced threshold
-            )
+        # 基本周波数の抽出
+        _f0, t = pyworld.dio(wave, fs)
+        f0 = pyworld.stonemask(wave, _f0, t, fs)
+        sp = pyworld.cheaptrick(wave, f0, t, fs)
+        ap = pyworld.d4c(
+            wave,
+            f0,
+            t,
+            fs,
+            # threshold=0.50   # voiced/unvoiced threshold
+        )
 
-            # f0 の平均値を求め、中央からどれだけ離れているかで、抑揚を表現する
-            total = 0
-            index = 0
-            for f in f0:
-                if f != 0:
-                    total += f
-                    index += 1
+        # f0 の平均値を求め、中央からどれだけ離れているかで、抑揚を表現する
+        total = 0
+        index = 0
+        for f in f0:
+            if f != 0:
+                total += f
+                index += 1
 
-            ave = total / index
+        ave = total / index
 
-            pos = 0
-            for f in f0:
-                if f != 0:
-                    f0[pos] = ave * onkou + (f - ave) * query.intonationScale
-                pos += 1
+        pos = 0
+        for f in f0:
+            if f != 0:
+                f0[pos] = ave * onkou + (f - ave) * query.intonationScale
+            pos += 1
 
         # 合成する
 
