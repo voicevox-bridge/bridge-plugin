@@ -481,6 +481,7 @@ jobs:
             --include-data-file="presets.yaml=./" \
             --include-data-file="default.csv=./" \
             --include-data-file="engine_manifest.json=./" \
+            --include-data-file="default_setting.yml=./" \
             --include-data-dir="speaker_info=./speaker_info" \
             --include-data-dir="engine_manifest_assets=./engine_manifest_assets" \
             --msvc=14.2 \
