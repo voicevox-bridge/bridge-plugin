@@ -47,7 +47,7 @@
         },
         "interrogative_upspeak": {
             "type": "bool",
-            "value": true,
+            "value": false,
             "name": "疑問文の自動調整"
         },
         "synthesis_morphing" : {
