@@ -52,6 +52,8 @@ speaker_infoフォルダ内のUUIDは、`bridge_config.yaml`で設定した`spea
 - port
 - default_sampling_rate
 
+Bridge Pluginの入ったフォルダをzipで圧縮し、拡張子を.vvppに変更すると、プラグインエンジンのファイルとして扱うことができます。  
+
 <details>
 <summary>bridge_config.yamlの例</summary>
 
