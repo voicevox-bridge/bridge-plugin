@@ -464,10 +464,6 @@ jobs:
           python -m nuitka \
             --standalone \
             --assume-yes-for-downloads \
-            --plugin-enable=numpy \
-            --plugin-enable=multiprocessing \
-            --plugin-enable=torch \
-            --enable-plugin=anti-bloat \
             --follow-import-to=numpy \
             --follow-import-to=aiofiles \
             --include-package=uvicorn \
