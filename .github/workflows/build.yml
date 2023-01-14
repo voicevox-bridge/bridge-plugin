@@ -496,16 +496,20 @@ jobs:
         run: |
           df -h
 
-      #- name: Create artifact directory with symlink
-      #  if: startsWith(matrix.os, 'windows-')
-      #  shell: bash
-      #  env:
-      #    PYTHON_SITE_PACKAGES_DIR: C:/hostedtoolcache/windows/python/${{ steps.setup-python.outputs.python-version }}/x64/lib/site-packages
+      - name: Create artifact directory with symlink
+        if: startsWith(matrix.os, 'windows-')
+        shell: bash
+        env:
+          PYTHON_SITE_PACKAGES_DIR: C:/hostedtoolcache/windows/python/${{ steps.setup-python.outputs.python-version }}/x64/lib/site-packages
       #    # create symlink instead of copy (Git Bash)
       #    # https://qiita.com/ucho/items/c5ea0beb8acf2f1e4772
-      #    MSYS: winsymlinks:nativestrict
-      #  run: |
-      #    set -eux
+          MSYS: winsymlinks:nativestrict
+        run: |
+          set -eux
+
+          # Build artifact directory
+          mkdir -p artifact
+          ln -sf "$(pwd)/run.dist"/* artifact/
 
       #    # Copy DLL dependencies
 
@@ -569,7 +573,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.vars.outputs.artifact_name }}
-          path: dist/run/
+          path: artifact/
 
   upload-to-release:
     if: needs.config.outputs.version != ''
