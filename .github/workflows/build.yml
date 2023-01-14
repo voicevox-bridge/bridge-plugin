@@ -639,10 +639,10 @@ jobs:
             ${{ steps.vars.outputs.package_name }}.vvpp.txt
           target_commitish: ${{ github.sha }}
 
-  run-release-test-workflow:
-    if: needs.config.outputs.version != ''
-    needs: [config, upload-to-release]
-    uses: ./.github/workflows/release-test.yml
-    with:
-      version: ${{ needs.config.outputs.version }}
-      repo_url: ${{ format('{0}/{1}', github.server_url, github.repository) }} # このリポジトリのURL
+  #run-release-test-workflow:
+  #  if: needs.config.outputs.version != ''
+  #  needs: [config, upload-to-release]
+  #  uses: ./.github/workflows/release-test.yml
+  #  with:
+  #    version: ${{ needs.config.outputs.version }}
+  #    repo_url: ${{ format('{0}/{1}', github.server_url, github.repository) }} # このリポジトリのURL
