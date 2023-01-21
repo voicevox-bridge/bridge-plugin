@@ -3,6 +3,7 @@ import argparse
 # import asyncio
 import base64
 import json
+import logging
 import os
 import re
 import sys
@@ -65,6 +66,8 @@ from voicevox_engine.utility import (
     delete_file,
     engine_root,
 )
+
+logging.getLogger("uvicorn").propagate = False
 
 
 def b64encode_str(s):
