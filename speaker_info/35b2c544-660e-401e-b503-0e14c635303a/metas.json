@@ -1,9 +1,3 @@
 {
-    "speakerName": "dummy3",
-    "speakerUuid": "dummy3uuid",
-    "styles": [
-        {
-            "styleId": 8
-        }
-    ]
+  "supported_features": { "permitted_synthesis_morphing": "NOTHING" }
 }

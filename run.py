@@ -39,6 +39,7 @@ from voicevox_engine.model import (
     ParseKanaError,
     Speaker,
     SpeakerInfo,
+    SpeakerNotFoundError,
     SupportedDevicesInfo,
     UserDictWord,
     WordTypes,
@@ -462,6 +463,40 @@ def generate_app(
             media_type="application/zip",
             background=BackgroundTask(delete_file, f.name),
         )
+
+    @app.get(
+        "/is_morphable",
+        response_model=bool,
+        tags=["音声合成"],
+        summary="2人の話者でモーフィングが可能かどうか返す",
+    )
+    def is_morphable(
+        base_speaker: int,
+        target_speaker: int,
+        core_version: Optional[str] = None,
+    ):
+        """
+        指定された2人の話者でモーフィング機能を利用可能か返します。
+        モーフィングの許可/禁止は`/speakers`の`speaker.supported_features.synthesisMorphing`に記載されています。
+        プロパティが存在しない場合は、モーフィングが許可されているとみなします。
+        """
+        engine = get_engine(core_version)
+
+        try:
+            speaker_ids = [
+                style["id"]
+                for speaker in json.loads(engine.speakers)
+                for style in speaker["styles"]
+            ]
+            if base_speaker not in speaker_ids:
+                raise SpeakerNotFoundError(base_speaker)
+            elif target_speaker not in speaker_ids:
+                raise SpeakerNotFoundError(target_speaker)
+        except SpeakerNotFoundError as e:
+            raise HTTPException(
+                status_code=404, detail=f"該当する話者(speaker={e.speaker})が見つかりません"
+            )
+        return False
 
     @app.post(
         "/synthesis_morphing",
