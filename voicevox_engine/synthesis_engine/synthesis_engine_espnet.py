@@ -239,6 +239,7 @@ class SynthesisEngineESPNet(SynthesisEngineBase):
 
         # 閾値30dbで前後の無音をトリミング
         wave, _ = librosa.effects.trim(wave, top_db=30)
+        wave = wave.astype(np.float64)
 
         # 開始無音
         if query.prePhonemeLength != 0:
