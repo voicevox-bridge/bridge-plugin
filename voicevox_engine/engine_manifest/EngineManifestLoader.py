@@ -56,3 +56,7 @@ class EngineManifestLoader:
     def load_info_for_bridge_config(self) -> Tuple[str, int, int]:
         manifest = json.loads(self.manifest_path.read_text(encoding="utf-8"))
         return manifest["version"], manifest["port"], manifest["default_sampling_rate"]
+
+    def load_version(self) -> str:
+        manifest = json.loads(self.manifest_path.read_text(encoding="utf-8"))
+        return manifest["version"]

@@ -545,7 +545,7 @@ def generate_app(
 
     @app.get("/version", tags=["その他"])
     def version() -> str:
-        return __version__
+        return engine_manifest_loader.load_version()
 
     @app.get("/core_versions", response_model=List[str], tags=["その他"])
     def core_versions() -> List[str]:
