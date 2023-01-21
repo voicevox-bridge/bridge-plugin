@@ -230,6 +230,9 @@ class SynthesisEngineESPNet(SynthesisEngineBase):
         assert _speaker.text2speech is not None
         assert _speaker.token_id_converter is not None
 
+        if len(query.accent_phrases) == 0:
+            return np.array([], dtype=np.float64)
+
         with torch.no_grad():
             tokens = query2tokens(query, _speaker.g2p)
             ids = np.array(_speaker.token_id_converter.tokens2ids(tokens))
