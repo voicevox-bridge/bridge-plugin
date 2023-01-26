@@ -7,7 +7,7 @@ from espnet2.bin.tts_inference import Text2Speech
 from espnet2.text.token_id_converter import TokenIDConverter
 from pydantic import BaseModel, Extra, Field
 
-from ..model import Speaker, SpeakerStyle
+from ..metas.Metas import Speaker, SpeakerStyle
 
 
 class TTSInferenceInitArgs(BaseModel):

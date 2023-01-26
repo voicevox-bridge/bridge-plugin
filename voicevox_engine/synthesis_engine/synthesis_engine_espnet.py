@@ -129,6 +129,7 @@ class SynthesisEngineESPNet(SynthesisEngineBase):
                         {"name": style.name, "id": style.id} for style in speaker.styles
                     ],
                     "version": speaker.version,
+                    "supported_features": {"permitted_synthesis_morphing": "NOTHING"},
                 }
                 for speaker in self.bridge_config.speakers
             ]
