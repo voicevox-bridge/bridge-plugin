@@ -638,8 +638,6 @@ jobs:
           tag_name: ${{ needs.config.outputs.version }}
           files: |-
             ${{ steps.vars.outputs.package_name }}.7z.*
-            ${{ steps.vars.outputs.package_name }}*.vvpp
-            ${{ steps.vars.outputs.package_name }}.vvpp.txt
           target_commitish: ${{ github.sha }}
 
   #run-release-test-workflow:
