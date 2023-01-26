@@ -17,6 +17,11 @@ VOICEVOXの開発者である、[ヒホ氏](https://twitter.com/hiho_karuta)よ�
 このソフトウェアで使用できる音声合成モデルに、「音声合成化を許諾している提供者の音声を元に作られていること」という制限を設けています。  
 音声合成化を拒絶する人もいることから、このような制限を設けさせていただきました。ご理解いただけますと幸いです。  
 
+## 採用ソフトウェア
+
+- [LMROID](https://lmroidsoftware.wixsite.com/nhoshio) (by [@ssohsn](https://twitter.com/ssohsn))
+- [ITVOICE](http://itvoice.starfree.jp/index.html) (by [@iTahobi](https://twitter.com/iTahobi))
+
 ## ダウンロード
 
 [こちら](https://github.com/voicevox-bridge/bridge-plugin/releases/latest)から対応するエンジンをダウンロードしてください。

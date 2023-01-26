@@ -16,7 +16,9 @@ class MetasStore:
 
     def __init__(self, engine: "SynthesisEngineBase") -> None:
         self._loaded_metas: Dict[str, EngineSpeaker] = {
-            speaker["speaker_uuid"]: EngineSpeaker(**{"supported_features": speaker["supported_features"]})
+            speaker["speaker_uuid"]: EngineSpeaker(
+                **{"supported_features": speaker["supported_features"]}
+            )
             for speaker in json.loads(engine.speakers)
         }
 
