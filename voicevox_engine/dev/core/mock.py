@@ -80,6 +80,7 @@ def metas() -> str:
                 ],
                 "speaker_uuid": "7ffcb7ce-00ec-4bdc-82cd-45a8889e43ff",
                 "version": "mock",
+                "supported_features": {},
             },
             {
                 "name": "dummy2",
@@ -91,6 +92,7 @@ def metas() -> str:
                 ],
                 "speaker_uuid": "388f246b-8c41-4ac1-8e2d-5d79f3ff56d9",
                 "version": "mock",
+                "supported_features": {},
             },
             {
                 "name": "dummy3",
@@ -99,6 +101,7 @@ def metas() -> str:
                 ],
                 "speaker_uuid": "35b2c544-660e-401e-b503-0e14c635303a",
                 "version": "mock",
+                "supported_features": {},
             },
             {
                 "name": "dummy4",
@@ -107,6 +110,7 @@ def metas() -> str:
                 ],
                 "speaker_uuid": "b1a81618-b27b-40d2-b0ea-27a9ad408c4b",
                 "version": "mock",
+                "supported_features": {},
             },
         ]
     )
