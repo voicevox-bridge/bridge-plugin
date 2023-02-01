@@ -1131,9 +1131,11 @@ if __name__ == "__main__":
         else settings.cors_policy_mode
     )
 
-    allow_origin = (
-        args.allow_origin if args.allow_origin is not None else settings.allow_origin
-    )
+    allow_origin = None
+    if args.allow_origin is not None:
+        allow_origin = args.allow_origin
+    elif settings.allow_origin is not None:
+        allow_origin = settings.allow_origin.split(" ")
 
     bridge_config = bridge_config_loader.load_config_file()
     host = bridge_config.host if args.host is None else args.host
