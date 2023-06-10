@@ -34,6 +34,7 @@ from voicevox_engine.model import (
     AccentPhrase,
     AudioQuery,
     DownloadableLibrary,
+    InstalledLibrary,
     MorphableTargetInfo,
     ParseKanaBadRequest,
     ParseKanaError,
@@ -758,7 +759,7 @@ def generate_app(
 
     @app.get(
         "/installed_libraries",
-        response_model=List[DownloadableLibrary],
+        response_model=Dict[str, InstalledLibrary],
         tags=["音声ライブラリ管理"],
     )
     def installed_libraries():
