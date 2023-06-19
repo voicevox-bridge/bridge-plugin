@@ -24,6 +24,10 @@ env:
   VOICEVOX_RESOURCE_VERSION: "0.14.3-preview.1"
   VOICEVOX_CORE_VERSION: "0.14.4"
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   config: # 全 jobs で利用する定数の定義. `env` が利用できないコンテキストでも利用できる.
     runs-on: ubuntu-latest
@@ -33,7 +37,6 @@ jobs:
     steps:
       - name: declare variables
         id: vars
-        shell: bash
         run: |
           : # release タグ名, または workflow_dispatch でのバージョン名. リリースでない (push event) 場合は空文字列
           echo "version=${{ github.event.release.tag_name || github.event.inputs.version }}" >> $GITHUB_OUTPUT
@@ -95,14 +98,12 @@ jobs:
     steps:
       - name: declare variables
         id: vars
-        shell: bash
         run: |
           echo "artifact_name=bridge_plugin-${{ matrix.target }}-${{ needs.config.outputs.version_or_latest }}-${{ github.sha }}" >> $GITHUB_OUTPUT
 
       - uses: actions/checkout@v3
 
       - name: Show disk space (debug info)
-        shell: bash
         run: |
           df -h
 
@@ -222,7 +223,6 @@ jobs:
 
       - name: Show disk space (debug info)
         if: matrix.cudnn_url != ''
-        shell: bash
         run: |
           df -h
 
@@ -240,7 +240,6 @@ jobs:
           cache: pip
 
       - name: Install Python dependencies
-        shell: bash
         run: |
           python -m pip install -r requirements-dev.txt
 
@@ -262,13 +261,11 @@ jobs:
           fi
 
       - name: Create download directory
-        shell: bash
         run: mkdir -p download/
 
       # Install Ccache
       - name: Export Ccache url to calc hash
         if: startsWith(matrix.os, 'windows-')
-        shell: bash
         run: echo "${{ matrix.ccache_url }}" > download/ccache_url.txt
 
       - name: Prepare Ccache
@@ -281,7 +278,6 @@ jobs:
 
       - name: Download Ccache
         if: startsWith(matrix.os, 'windows-') && steps.ccache-cache.outputs.cache-hit != 'true'
-        shell: bash
         run: |
           curl -L "${{ matrix.ccache_url }}" > download/ccache.zip
           unzip download/ccache.zip -d download/
@@ -290,7 +286,6 @@ jobs:
 
       - name: Install Ccache
         if: startsWith(matrix.os, 'windows-')
-        shell: bash
         run: |
           echo "$HOME/download/ccache" >> $GITHUB_PATH
 
@@ -362,7 +357,6 @@ jobs:
       #    rm download/onnxruntime.tgz
 
       - name: Show disk space (debug info)
-        shell: bash
         run: |
           df -h
 
@@ -427,7 +421,6 @@ jobs:
       #    cp -r download/core/model ./
 
       - name: Generate licenses.json
-        shell: bash
         run: |
           OUTPUT_LICENSE_JSON_PATH=engine_manifest_assets/dependency_licenses.json \
           bash build_util/create_venv_and_generate_licenses.bash
@@ -445,12 +438,10 @@ jobs:
             ${{ runner.os }}-nuitka-${{ matrix.artifact_name }}-
 
       - name: Show disk space (debug info)
-        shell: bash
         run: |
           df -h
 
       - name: Build run.py with nuitka
-        shell: bash
         env:
           NUITKA_CACHE_DIR: ${{ matrix.nuitka_cache_path }}
         run: |
@@ -494,13 +485,11 @@ jobs:
             run.py
 
       - name: Show disk space (debug info)
-        shell: bash
         run: |
           df -h
 
       - name: Create artifact directory with symlink
         if: startsWith(matrix.os, 'windows-')
-        shell: bash
         env:
           PYTHON_SITE_PACKAGES_DIR: C:/hostedtoolcache/windows/python/${{ steps.setup-python.outputs.python-version }}/x64/lib/site-packages
       #    # create symlink instead of copy (Git Bash)
@@ -593,7 +582,6 @@ jobs:
     steps:
       - name: declare variables
         id: vars
-        shell: bash
         run: |
           echo "package_name=bridge_plugin-${{ matrix.target }}-${{ needs.config.outputs.version }}" >> $GITHUB_OUTPUT
           : # this is exactly same as `steps.vars.outputs.artifact_name` in `build-all` job,
