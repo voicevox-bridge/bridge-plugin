@@ -1,7 +1,6 @@
 aiofiles==0.7.0 ; python_version >= "3.11" and python_version < "3.12"
 antlr4-python3-runtime==4.9.3 ; python_version >= "3.11" and python_version < "3.12"
 anyio==3.7.1 ; python_version >= "3.11" and python_version < "3.12"
-appdirs==1.4.4 ; python_version >= "3.11" and python_version < "3.12"
 asgiref==3.7.2 ; python_version >= "3.11" and python_version < "3.12"
 asteroid-filterbanks==0.4.0 ; python_version >= "3.11" and python_version < "3.12"
 audioread==3.0.0 ; python_version >= "3.11" and python_version < "3.12"
