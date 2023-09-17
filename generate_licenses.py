@@ -233,6 +233,31 @@ def generate_licenses() -> List[License]:
                     "https://raw.githubusercontent.com/voicevox-bridge/espnet/master/LICENSE"
                 ) as res:
                     license.text = res.read().decode()
+            elif license.name.lower() == "antlr4-python3-runtime":
+                with urllib.request.urlopen(
+                    "https://raw.githubusercontent.com/antlr/antlr4/master/LICENSE.txt"
+                ) as res:
+                    license.text = res.read().decode()
+            elif license.name.lower() == "atomicwrites":
+                with urllib.request.urlopen(
+                    "https://raw.githubusercontent.com/untitaker/python-atomicwrites/master/LICENSE"
+                ) as res:
+                    license.text = res.read().decode()
+            elif license.name.lower() == "docopt":
+                with urllib.request.urlopen(
+                    "https://raw.githubusercontent.com/docopt/docopt/master/LICENSE-MIT"
+                ) as res:
+                    license.text = res.read().decode()
+            elif license.name.lower() == "fast-bss-eval":
+                with urllib.request.urlopen(
+                    "https://raw.githubusercontent.com/fakufaku/fast_bss_eval/main/LICENSE"
+                ) as res:
+                    license.text = res.read().decode()
+            elif license.name.lower() == "ordered-set":
+                with urllib.request.urlopen(
+                    "https://raw.githubusercontent.com/rspeer/ordered-set/master/MIT-LICENSE"
+                ) as res:
+                    license.text = res.read().decode()
             elif license.name.lower() == "nvidia-cublas-cu11":
                 license.text = Path("docs/licenses/cublas/License.txt").read_text(
                     encoding="utf8"
