@@ -282,6 +282,26 @@ def generate_licenses() -> List[License]:
                 license.text = Path("docs/licenses/cufft/License.txt").read_text(
                     encoding="utf8"
                 )
+            elif license.name.lower() == "nvidia-curand-cu11":
+                license.text = Path("docs/licenses/curand/License.txt").read_text(
+                    encoding="utf8"
+                )
+            elif license.name.lower() == "nvidia-cusolver-cu11":
+                license.text = Path("docs/licenses/cusolver/License.txt").read_text(
+                    encoding="utf8"
+                )
+            elif license.name.lower() == "nvidia-cusparse-cu11":
+                license.text = Path("docs/licenses/cusparse/License.txt").read_text(
+                    encoding="utf8"
+                )
+            elif license.name.lower() == "nvidia-nccl-cu11":
+                license.text = Path("docs/licenses/nccl/License.txt").read_text(
+                    encoding="utf8"
+                )
+            elif license.name.lower() == "nvidia-nvtx-cu11":
+                license.text = Path("docs/licenses/nvtx/License.txt").read_text(
+                    encoding="utf8"
+                )
             else:
                 # ライセンスがpypiに無い
                 raise Exception(f"No License info provided for {license.name}")
