@@ -45,12 +45,6 @@
         'def convert_to_ascii(text):': ''
         'return unidecode(text)': ''
 
-- module-name: 'soundfile'
-  data-files:
-    dest_path: '.'
-    patterns:
-      - '_soundfile_data/*'
-
 - module-name: 'espnet'
   data-files:
     patterns:
