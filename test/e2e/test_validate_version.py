@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from voicevox_engine import __version__
+# from voicevox_engine import __version__
 
 
 def test_fetch_version_success(client: TestClient):

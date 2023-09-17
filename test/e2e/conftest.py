@@ -4,16 +4,18 @@ import pytest
 from fastapi.testclient import TestClient
 from run import generate_app
 
+from voicevox_engine.bridge_config import BridgeConfigLoader
 from voicevox_engine.setting import SettingLoader
 from voicevox_engine.synthesis_engine import make_synthesis_engines
 from voicevox_engine.utility.core_version_utility import get_latest_core_version
-from voicevox_engine.bridge_config import BridgeConfigLoader
 
 
 @pytest.fixture(scope="session")
 def client():
     bridge_config_loader = BridgeConfigLoader(Path("./invalid"))
-    synthesis_engines = make_synthesis_engines(use_gpu=False, bridge_config_loader=bridge_config_loader)
+    synthesis_engines = make_synthesis_engines(
+        use_gpu=False, bridge_config_loader=bridge_config_loader
+    )
     latest_core_version = get_latest_core_version(versions=synthesis_engines.keys())
     setting_loader = SettingLoader(Path("./default_setting.yml"))
 
