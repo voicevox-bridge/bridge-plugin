@@ -274,6 +274,10 @@ def generate_licenses() -> List[License]:
                 license.text = Path("docs/licenses/cudnn/License.txt").read_text(
                     encoding="utf8"
                 )
+            elif license.name.lower() == "nvidia-cuda-cupti-cu11":
+                license.text = Path("docs/licenses/cupti/License.txt").read_text(
+                    encoding="utf8"
+                )
             else:
                 # ライセンスがpypiに無い
                 raise Exception(f"No License info provided for {license.name}")
