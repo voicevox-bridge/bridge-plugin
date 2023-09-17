@@ -56,6 +56,7 @@ pyopenjtalk = {git = "https://github.com/VOICEVOX/pyopenjtalk", rev = "b35fc89fe
 espnet = {git = "https://github.com/voicevox-bridge/espnet", rev = "788d58bd849a93c7a92aa694af4142a812d9334b"}
 semver = "^3.0.1"
 platformdirs = "^3.10.0"
+torchaudio = "^2.0.2"
 
 [tool.poetry.group.dev.dependencies]
 cython = "^0.29.34,>=0.29.33" # NOTE: for Python 3.11
