@@ -258,6 +258,11 @@ def generate_licenses() -> List[License]:
                     "https://raw.githubusercontent.com/rspeer/ordered-set/master/MIT-LICENSE"
                 ) as res:
                     license.text = res.read().decode()
+            elif license.name.lower() == "triton":
+                with urllib.request.urlopen(
+                    "https://raw.githubusercontent.com/openai/triton/main/LICENSE"
+                ) as res:
+                    license.text = res.read().decode()
             elif license.name.lower() == "nvidia-cublas-cu11":
                 license.text = Path("docs/licenses/cublas/License.txt").read_text(
                     encoding="utf8"
