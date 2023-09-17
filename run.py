@@ -177,9 +177,10 @@ def generate_app(
     preset_manager = PresetManager(
         preset_path=root_dir / "presets.yaml",
     )
-    engine_manifest_data = EngineManifestLoader(
+    engine_manifest_loader = EngineManifestLoader(
         engine_root() / "engine_manifest.json", engine_root()
-    ).load_manifest()
+    )
+    engine_manifest_data = engine_manifest_loader.load_manifest()
     library_manager = LibraryManager(
         get_save_dir() / "installed_libraries",
         engine_manifest_data.supported_vvlib_manifest_version,
