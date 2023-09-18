@@ -447,6 +447,12 @@ jobs:
         run: |
           set -eux
 
+          # workaround for nuitka
+          # https://github.com/ilammy/msvc-dev-cmd#name-conflicts-with-shell-bash
+          if [[ ${{ matrix.os }} == windows-* ]]; then
+            rm /usr/bin/link
+          fi
+
           jq '.version = "${{ needs.config.outputs.version_or_latest }}"' engine_manifest.json > engine_manifest.json.tmp
           mv -f engine_manifest.json.tmp engine_manifest.json
 
