@@ -478,7 +478,7 @@ jobs:
             --include-data-file="default_setting.yml=./" \
             --include-data-dir="speaker_info=./speaker_info" \
             --include-data-dir="engine_manifest_assets=./engine_manifest_assets" \
-            --msvc=14.2 \
+            --msvc=14.3 \
             --follow-imports \
             --no-prefer-source-code \
             --user-package-configuration-file="nuitka-config.yaml" \
