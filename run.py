@@ -111,6 +111,7 @@ def generate_app(
     latest_core_version: str,
     setting_loader: SettingLoader,
     preset_manager: PresetManager,
+    cancellable_engine: None = None,
     root_dir: Optional[Path] = None,
     cors_policy_mode: CorsPolicyMode = CorsPolicyMode.localapps,
     allow_origin: Optional[List[str]] = None,
@@ -193,7 +194,7 @@ def generate_app(
 
     # @app.on_event("startup")
     # async def start_catch_disconnection():
-    #     if args.enable_cancellable_synthesis:
+    #     if cancellable_engine is not None:
     #         loop = asyncio.get_event_loop()
     #         _ = loop.create_task(cancellable_engine.catch_disconnection())
 
@@ -1111,7 +1112,7 @@ def generate_app(
     return app
 
 
-if __name__ == "__main__":
+def main() -> None:
 
     output_log_utf8 = os.getenv("VV_OUTPUT_LOG_UTF8", default="")
     if output_log_utf8 == "1":
@@ -1121,8 +1122,6 @@ if __name__ == "__main__":
             "WARNING:  invalid VV_OUTPUT_LOG_UTF8 environment variable value",
             file=sys.stderr,
         )
-
-    default_cors_policy_mode = CorsPolicyMode.localapps
 
     parser = argparse.ArgumentParser(description="VOICEVOX のエンジンです。")
     parser.add_argument("--host", type=str, default=None, help="接続を受け付けるホストアドレスです。")
@@ -1288,6 +1287,7 @@ if __name__ == "__main__":
             latest_core_version,
             setting_loader,
             preset_manager=preset_manager,
+            cancellable_engine=cancellable_engine,
             root_dir=root_dir,
             cors_policy_mode=cors_policy_mode,
             allow_origin=allow_origin,
@@ -1296,3 +1296,7 @@ if __name__ == "__main__":
         host=host,
         port=port,
     )
+
+
+if __name__ == "__main__":
+    main()
