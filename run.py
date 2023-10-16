@@ -1246,10 +1246,15 @@ def main() -> None:
     if args.output_log_utf8:
         set_output_log_utf8()
 
+    # Synthesis Engine
+    use_gpu: bool = args.use_gpu
+    enable_mock: bool = args.enable_mock
+    load_all_models: bool = args.load_all_models
+
     synthesis_engines = make_synthesis_engines(
-        use_gpu=args.use_gpu,
-        enable_mock=args.enable_mock,
-        load_all_models=args.load_all_models,
+        use_gpu=use_gpu,
+        enable_mock=enable_mock,
+        load_all_models=load_all_models,
         bridge_config_loader=bridge_config_loader,
     )
     assert len(synthesis_engines) != 0, "音声合成エンジンがありません。"
