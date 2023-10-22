@@ -144,10 +144,10 @@ class SynthesisEngineESPNet(SynthesisEngineBase):
             }
         )
 
-    def _get_style(self, speaker_id):
+    def _get_style(self, style_id):
         for speaker in self.bridge_config.speakers:
             for style in speaker.styles:
-                if style.id == speaker_id:
+                if style.id == style_id:
                     _speaker = style
                     break
             else:
@@ -157,8 +157,8 @@ class SynthesisEngineESPNet(SynthesisEngineBase):
             raise HTTPException(status_code=404, detail="該当する話者が見つかりません")
         return _speaker
 
-    def initialize_speaker_synthesis(self, speaker_id: int, skip_reinit: bool):
-        speaker = self._get_style(speaker_id)
+    def initialize_style_id_synthesis(self, style_id: int, skip_reinit: bool):
+        speaker = self._get_style(style_id)
         if speaker.text2speech is None or not skip_reinit:
             speaker.text2speech = Text2Speech(**speaker.tts_inference_init_args.dict())
         if speaker.token_id_converter is None or not skip_reinit:
@@ -167,14 +167,14 @@ class SynthesisEngineESPNet(SynthesisEngineBase):
             )
             assert speaker.token_id_converter is not None
 
-    def is_initialized_speaker_synthesis(self, speaker_id: int) -> bool:
-        speaker = self._get_style(speaker_id)
+    def is_initialized_style_id_synthesis(self, style_id: int) -> bool:
+        speaker = self._get_style(style_id)
         return (
             speaker.text2speech is not None and speaker.token_id_converter is not None
         )
 
     def replace_phoneme_length(
-        self, accent_phrases: List[AccentPhrase], speaker_id: int
+        self, accent_phrases: List[AccentPhrase], style_id: int
     ) -> List[AccentPhrase]:
         """
         accent_phrasesの母音・子音の長さを設定する
@@ -182,8 +182,8 @@ class SynthesisEngineESPNet(SynthesisEngineBase):
         ----------
         accent_phrases : List[AccentPhrase]
             アクセント句モデルのリスト
-        speaker_id : int
-            話者ID
+        style_id : int
+            スタイルID
         Returns
         -------
         accent_phrases : List[AccentPhrase]
@@ -193,7 +193,7 @@ class SynthesisEngineESPNet(SynthesisEngineBase):
         return accent_phrases
 
     def replace_mora_pitch(
-        self, accent_phrases: List[AccentPhrase], speaker_id: int
+        self, accent_phrases: List[AccentPhrase], style_id: int
     ) -> List[AccentPhrase]:
         """
         accent_phrasesの音高(ピッチ)を設定する
@@ -201,8 +201,8 @@ class SynthesisEngineESPNet(SynthesisEngineBase):
         ----------
         accent_phrases : List[AccentPhrase]
             アクセント句モデルのリスト
-        speaker_id : int
-            話者ID
+        style_id : int
+            スタイルID
         Returns
         -------
         accent_phrases : List[AccentPhrase]
@@ -211,22 +211,22 @@ class SynthesisEngineESPNet(SynthesisEngineBase):
         # 音高を設定するのは不可能なのでそのまま返す
         return accent_phrases
 
-    def _synthesis_impl(self, query: AudioQuery, speaker_id: int):
+    def _synthesis_impl(self, query: AudioQuery, style_id: int):
         """
         音声合成クエリから音声合成に必要な情報を構成し、実際に音声合成を行う
         Parameters
         ----------
         query : AudioQuery
             音声合成クエリ
-        speaker_id : int
-            話者ID
+        style_id : int
+            スタイルID
         Returns
         -------
         wave : numpy.ndarray
             音声合成結果
         """
-        self.initialize_speaker_synthesis(speaker_id, skip_reinit=True)
-        _speaker = self._get_style(speaker_id)
+        self.initialize_style_id_synthesis(style_id, skip_reinit=True)
+        _speaker = self._get_style(style_id)
 
         assert _speaker.text2speech is not None
         assert _speaker.token_id_converter is not None

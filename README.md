@@ -198,7 +198,7 @@ echo -n "こんにちは、音声合成の世界へようこそ" >text.txt
 
 curl -s \
     -X POST \
-    "127.0.0.1:50021/audio_query?speaker=1"\
+    "127.0.0.1:50021/audio_query?style_id=1"\
     --get --data-urlencode text@text.txt \
     > query.json
 
@@ -206,7 +206,7 @@ curl -s \
     -H "Content-Type: application/json" \
     -X POST \
     -d @query.json \
-    "127.0.0.1:50021/synthesis?speaker=1" \
+    "127.0.0.1:50021/synthesis?style_id=1" \
     > audio.wav
 ```
 
@@ -231,7 +231,7 @@ echo -n "ディープラーニングは万能薬ではありません" >text.txt
 
 curl -s \
     -X POST \
-    "127.0.0.1:50021/audio_query?speaker=1" \
+    "127.0.0.1:50021/audio_query?style_id=1" \
     --get --data-urlencode text@text.txt \
     > query.json
 
@@ -243,7 +243,7 @@ cat query.json | grep -o -E "\"kana\":\".*\""
 echo -n "ディイプラ'アニングワ/バンノ'オヤクデワ/アリマセ'ン" > kana.txt
 curl -s \
     -X POST \
-    "127.0.0.1:50021/accent_phrases?speaker=1&is_kana=true" \
+    "127.0.0.1:50021/accent_phrases?style_id=1&is_kana=true" \
     --get --data-urlencode text@kana.txt \
     > newphrases.json
 
@@ -254,17 +254,17 @@ curl -s \
     -H "Content-Type: application/json" \
     -X POST \
     -d @newquery.json \
-    "127.0.0.1:50021/synthesis?speaker=1" \
+    "127.0.0.1:50021/synthesis?style_id=1" \
     > audio.wav
 ```
 
 ### ユーザー辞書機能について
 
-APIからユーザー辞書の参照、単語の追加、編集、削除を行うことができます。
+API からユーザー辞書の参照、単語の追加、編集、削除を行うことができます。
 
 #### 参照
 
-`/user_dict`にGETリクエストを投げることでユーザー辞書の一覧を取得することができます。
+`/user_dict`に GET リクエストを投げることでユーザー辞書の一覧を取得することができます。
 
 ```bash
 curl -s -X GET "127.0.0.1:50021/user_dict"
@@ -272,17 +272,18 @@ curl -s -X GET "127.0.0.1:50021/user_dict"
 
 #### 単語追加
 
-`/user_dict_word`にPOSTリクエストを投げる事でユーザー辞書に単語を追加することができます。  
-URLパラメータとして、以下が必要です。
+`/user_dict_word`に POST リクエストを投げる事でユーザー辞書に単語を追加することができます。  
+URL パラメータとして、以下が必要です。
+
 - surface （辞書に登録する単語）
 - pronunciation （カタカナでの読み方）
 - accent_type （アクセント核位置、整数）
 
 アクセント核位置については、こちらの文章が参考になるかと思います。  
 〇型となっている数字の部分がアクセント核位置になります。  
-https://tdmelodic.readthedocs.io/ja/latest/pages/introduction.html  
+https://tdmelodic.readthedocs.io/ja/latest/pages/introduction.html
 
-成功した場合の返り値は単語に割り当てられるUUIDの文字列になります。
+成功した場合の返り値は単語に割り当てられる UUID の文字列になります。
 
 ```bash
 surface="test"
@@ -298,13 +299,14 @@ curl -s -X POST "127.0.0.1:50021/user_dict_word" \
 
 #### 単語修正
 
-`/user_dict_word/{word_uuid}`にPUTリクエストを投げる事でユーザー辞書の単語を修正することができます。  
-URLパラメータとして、以下が必要です。
+`/user_dict_word/{word_uuid}`に PUT リクエストを投げる事でユーザー辞書の単語を修正することができます。  
+URL パラメータとして、以下が必要です。
+
 - surface （辞書に登録するワード）
 - pronunciation （カタカナでの読み方）
 - accent_type （アクセント核位置、整数）
 
-word_uuidは単語追加時に確認できるほか、ユーザー辞書を参照することでも確認できます。  
+word_uuid は単語追加時に確認できるほか、ユーザー辞書を参照することでも確認できます。  
 成功した場合の返り値は`204 No Content`になります。
 
 ```bash
@@ -323,9 +325,9 @@ curl -s -X PUT "127.0.0.1:50021/user_dict_word/$word_uuid" \
 
 #### 単語削除
 
-`/user_dict_word/{word_uuid}`にDELETEリクエストを投げる事でユーザー辞書の単語を削除することができます。  
+`/user_dict_word/{word_uuid}`に DELETE リクエストを投げる事でユーザー辞書の単語を削除することができます。
 
-word_uuidは単語追加時に確認できるほか、ユーザー辞書を参照することでも確認できます。  
+word_uuid は単語追加時に確認できるほか、ユーザー辞書を参照することでも確認できます。  
 成功した場合の返り値は`204 No Content`になります。
 
 ```bash
@@ -360,7 +362,7 @@ curl -s \
     -H "Content-Type: application/json" \
     -X POST \
     -d @query.json \
-    "127.0.0.1:50021/synthesis?speaker=$style_id" \
+    "127.0.0.1:50021/synthesis?style_id=$style_id" \
     > audio.wav
 ```
 
@@ -382,11 +384,11 @@ curl -s -X GET "127.0.0.1:50021/speaker_info?speaker_uuid=7ffcb7ce-00ec-4bdc-82c
 ```
 
 
-### CORS設定
+### CORS 設定
 
-VOICEVOXではセキュリティ保護のため`localhost`・`127.0.0.1`・`app://`・Originなし以外のOriginからリクエストを受け入れないようになっています。
+VOICEVOX ではセキュリティ保護のため`localhost`・`127.0.0.1`・`app://`・Origin なし以外の Origin からリクエストを受け入れないようになっています。
 そのため、一部のサードパーティアプリからのレスポンスを受け取れない可能性があります。  
-これを回避する方法として、エンジンから設定できるUIを用意しています。
+これを回避する方法として、エンジンから設定できる UI を用意しています。
 
 #### 設定方法
 
