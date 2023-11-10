@@ -99,6 +99,15 @@
         'def convert_to_ascii(text):': ''
         'return unidecode(text)': ''
 
+- module-name: 'espnet2.gan_tts.vits.monotonic_align'
+  anti-bloat:
+    - description: 'remove numba dependency'
+      replacements_plain:
+        'from numba import njit': ''
+        'from numba import prange': ''
+        '@njit': '#'
+        'prange(': 'range('
+
 - module-name: 'espnet'
   data-files:
     patterns:
