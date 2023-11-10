@@ -80,9 +80,7 @@
 
           def jit(*args, **kwargs):
               return lambda f: f
-
-          def prange(obj):
-              return obj
+        'prange(': 'range('
 
 - module-name: 'resampy.core'
   anti-bloat:
