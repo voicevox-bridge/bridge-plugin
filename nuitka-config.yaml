@@ -1,27 +1,3 @@
-- module-name: 'numba.core.decorators'
-  anti-bloat:
-    - description: 'replace decorators'
-      module_code: |
-        from numba.stencils.stencil import stencil
-
-        def _wrapper(f):
-            return f
-
-        def jit(*args, **kwargs):
-            return _wrapper
-
-        def generated_jit(*args, **kwargs):
-            return _wrapper
-
-        def njit(*args, **kwargs):
-            return _wrapper
-
-        def cfunc(*args, **kwargs):
-            return _wrapper
-
-        def jit_module(*args, **kwargs):
-            pass
-
 - module-name: 'librosa.decompose'
   anti-bloat:
     - description: 'remove sklearn dependency'
@@ -36,6 +12,114 @@
         'import sklearn.feature_extraction': ''
         'import sklearn.neighbors': ''
         'import sklearn': ''
+
+- module-name: 'librosa.util.utils'
+  anti-bloat:
+    - description: 'remove numba dependency'
+      replacements_plain:
+        '@numba.jit': '#'
+        '@numba.stencil': '#'
+        'import numba': |
+          class numba:
+              @classmethod
+              def guvectorize(cls, *args, **kwargs):
+                  return lambda f: f
+
+              @classmethod
+              def vectorize(cls, *args, **kwargs):
+                  return lambda f: f
+
+- module-name: 'librosa.util.matching'
+  anti-bloat:
+    - description: 'remove numba dependency'
+      replacements_plain:
+        'import numba': ''
+        '@numba.jit': '#'
+        'numba.uint32': 'np.uint'
+
+- module-name: 'librosa.filters'
+  anti-bloat:
+    - description: 'remove numba dependency'
+      replacements_plain:
+        'from numba import jit': ''
+        '@jit': '#'
+
+- module-name: 'librosa.core.audio'
+  anti-bloat:
+    - description: 'remove numba dependency'
+      replacements_plain:
+        '@jit': '#'
+        '@stencil': ''
+        'from numba import jit, stencil, guvectorize': |
+          def guvectorize(*args, **kwargs):
+              return lambda f: f
+
+- module-name: 'librosa.core.spectrum'
+  anti-bloat:
+    - description: 'remove numba dependency'
+      replacements_plain:
+        'from numba import jit': ''
+        '@jit': '#'
+
+- module-name: 'librosa.core.constantq'
+  anti-bloat:
+    - description: 'remove numba dependency'
+      replacements_plain:
+        'from numba import jit': ''
+        '@jit': '#'
+
+- module-name: 'librosa.core.pitch'
+  anti-bloat:
+    - description: 'remove numba dependency'
+      replacements_plain:
+        '@numba.stencil': '#'
+        'import numba': |
+          class numba:
+              @classmethod
+              def guvectorize(cls, *args, **kwargs):
+                  return lambda f: f
+
+- module-name: 'librosa.sequence'
+  anti-bloat:
+    - description: 'remove numba dependency'
+      replacements_plain:
+        'from numba import jit': ''
+        '@jit': '#'
+
+- module-name: 'librosa.feature.utils'
+  anti-bloat:
+    - description: 'remove numba dependency'
+      replacements_plain:
+        'from numba import jit': ''
+        '@jit': '#'
+
+- module-name: 'librosa.core.notation'
+  anti-bloat:
+    - description: 'remove numba dependency'
+      replacements_plain:
+        'from numba import jit': ''
+        '@jit': '#'
+
+- module-name: 'resampy.interpn'
+  anti-bloat:
+    - description: 'remove numba dependency'
+      replacements_plain:
+        'from numba import guvectorize, jit, prange': |
+          def guvectorize(*args, **kwargs):
+              return lambda f: f
+
+          def jit(*args, **kwargs):
+              return lambda f: f
+
+          def prange(obj):
+              return obj
+
+- module-name: 'resampy.core'
+  anti-bloat:
+    - description: 'remove numba dependency'
+      replacements_plain:
+        'import numba': ''
+        'numba.TypingError': 'Exception'
 
 - module-name: 'tacotron_cleaner.cleaners'
   anti-bloat:

@@ -477,6 +477,7 @@ jobs:
             --nofollow-import-to=torchaudio \
             --nofollow-import-to=distance \
             --nofollow-import-to=unidecode \
+            --nofollow-import-to=numba \
             --include-data-file="licenses.json=./" \
             --include-data-file="presets.yaml=./" \
             --include-data-file="default.csv=./" \
