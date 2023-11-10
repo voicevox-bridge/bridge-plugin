@@ -3,6 +3,9 @@ import sys
 import traceback
 from pathlib import Path
 
+# コンパイル済環境でchdirをした場合、root_dirが書き換わるので、初期値を保存しておく
+_root_dir = Path(sys.argv[0]).parent.resolve(strict=True)
+
 
 def engine_root() -> Path:
     if is_development():
@@ -10,7 +13,7 @@ def engine_root() -> Path:
 
     # Nuitka/Pyinstallerでビルドされている場合
     else:
-        root_dir = Path(sys.argv[0]).parent
+        root_dir = Path(str(_root_dir))
 
     return root_dir.resolve(strict=True)
 
