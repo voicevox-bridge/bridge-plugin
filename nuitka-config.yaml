@@ -17,17 +17,8 @@
   anti-bloat:
     - description: 'remove numba dependency'
       replacements_plain:
+        'import numba': ''
         '@numba.jit': '#'
-        '@numba.stencil': '#'
-        'import numba': |
-          class numba:
-              @classmethod
-              def guvectorize(cls, *args, **kwargs):
-                  return lambda f: f
-
-              @classmethod
-              def vectorize(cls, *args, **kwargs):
-                  return lambda f: f
 
 - module-name: 'librosa.util.matching'
   anti-bloat:
@@ -49,10 +40,7 @@
     - description: 'remove numba dependency'
       replacements_plain:
         '@jit': '#'
-        '@stencil': ''
-        'from numba import jit, stencil, guvectorize': |
-          def guvectorize(*args, **kwargs):
-              return lambda f: f
+        'from numba import jit': ''
 
 - module-name: 'librosa.core.spectrum'
   anti-bloat:
@@ -68,17 +56,6 @@
         'from numba import jit': ''
         '@jit': '#'
 
-- module-name: 'librosa.core.pitch'
-  anti-bloat:
-    - description: 'remove numba dependency'
-      replacements_plain:
-        '@numba.stencil': '#'
-        'import numba': |
-          class numba:
-              @classmethod
-              def guvectorize(cls, *args, **kwargs):
-                  return lambda f: f
-
 - module-name: 'librosa.sequence'
   anti-bloat:
     - description: 'remove numba dependency'
@@ -87,13 +64,6 @@
         '@jit': '#'
 
 - module-name: 'librosa.feature.utils'
-  anti-bloat:
-    - description: 'remove numba dependency'
-      replacements_plain:
-        'from numba import jit': ''
-        '@jit': '#'
-
-- module-name: 'librosa.core.notation'
   anti-bloat:
     - description: 'remove numba dependency'
       replacements_plain:
