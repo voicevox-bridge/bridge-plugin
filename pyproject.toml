@@ -56,7 +56,6 @@ pyopenjtalk = {git = "https://github.com/VOICEVOX/pyopenjtalk", rev = "b35fc89fe
 espnet = {git = "https://github.com/voicevox-bridge/espnet", rev = "ff992af2279a03405257a844c48bf83f47805b1b"}
 semver = "^3.0.1"
 platformdirs = "^3.10.0"
-torchaudio = "^2.0.2"
 typeguard = "2.13.3"
 joblib = "1.2.0"
 
