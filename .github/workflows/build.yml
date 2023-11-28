@@ -476,19 +476,19 @@ jobs:
             --user-package-configuration-file="nuitka-config.yaml" \
             run.py
 
-      - name: Create artifact directory with symlink
-        if: startsWith(matrix.os, 'windows-')
-        env:
-          PYTHON_SITE_PACKAGES_DIR: C:/hostedtoolcache/windows/python/${{ steps.setup-python.outputs.python-version }}/x64/lib/site-packages
+      # - name: Create artifact directory with symlink
+      #   if: startsWith(matrix.os, 'windows-')
+      #   env:
+      #     PYTHON_SITE_PACKAGES_DIR: C:/hostedtoolcache/windows/python/${{ steps.setup-python.outputs.python-version }}/x64/lib/site-packages
       #    # create symlink instead of copy (Git Bash)
       #    # https://qiita.com/ucho/items/c5ea0beb8acf2f1e4772
-          MSYS: winsymlinks:nativestrict
-        run: |
-          set -eux
+      #    MSYS: winsymlinks:nativestrict
+      #  run: |
+      #    set -eux
 
-          # Build artifact directory
-          mkdir -p artifact
-          ln -sf "$(pwd)/run.dist"/* artifact/
+      #    # Build artifact directory
+      #    mkdir -p artifact
+      #    ln -sf "$(pwd)/run.dist"/* artifact/
 
       #    # Copy DLL dependencies
 
@@ -551,7 +551,7 @@ jobs:
       - name: Rearchive and split artifact
         shell: bash
         run: |
-          mv dist/run/ "${{ matrix.target }}/"
+          mv run.dist/ "${{ matrix.target }}/"
 
           # Compress to artifact.7z.001, artifact.7z.002, ...
           7z -r -v1900m a "${{ steps.vars.outputs.package_name }}.7z" "${{ matrix.target }}/"
