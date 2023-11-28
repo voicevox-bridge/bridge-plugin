@@ -110,6 +110,7 @@ def generate_app(
     synthesis_engines: Dict[str, SynthesisEngineBase],
     latest_core_version: str,
     setting_loader: SettingLoader,
+    preset_manager: PresetManager,
     root_dir: Optional[Path] = None,
     cors_policy_mode: CorsPolicyMode = CorsPolicyMode.localapps,
     allow_origin: Optional[List[str]] = None,
@@ -174,9 +175,6 @@ def generate_app(
                 status_code=403, content={"detail": "Origin not allowed"}
             )
 
-    preset_manager = PresetManager(
-        preset_path=root_dir / "presets.yaml",
-    )
     engine_manifest_loader = EngineManifestLoader(
         engine_root() / "engine_manifest.json", engine_root()
     )
@@ -1215,6 +1213,17 @@ if __name__ == "__main__":
         help="Bridge Configファイルのあるディレクトリです。",
     )
 
+    parser.add_argument(
+        "--preset_file",
+        type=Path,
+        default=None,
+        help=(
+            "プリセットファイルを指定できます。"
+            "指定がない場合、環境変数 VV_PRESET_FILE、--voicevox_dirのpresets.yaml、"
+            "実行ファイルのディレクトリのpresets.yamlを順に探します。"
+        ),
+    )
+
     args = parser.parse_args()
 
     bridge_config_loader = BridgeConfigLoader(args.bridge_config_dir)
@@ -1233,17 +1242,17 @@ if __name__ == "__main__":
 
     cancellable_engine = None
 
-    root_dir = engine_root()
+    root_dir: Path | None = None
+    if root_dir is None:
+        root_dir = engine_root()
 
     setting_loader = SettingLoader(args.setting_file)
 
     settings = setting_loader.load_setting_file()
 
-    cors_policy_mode = (
-        args.cors_policy_mode
-        if args.cors_policy_mode is not None
-        else settings.cors_policy_mode
-    )
+    cors_policy_mode: CorsPolicyMode | None = args.cors_policy_mode
+    if cors_policy_mode is None:
+        cors_policy_mode = settings.cors_policy_mode
 
     allow_origin = None
     if args.allow_origin is not None:
@@ -1255,11 +1264,30 @@ if __name__ == "__main__":
     host = bridge_config.host if args.host is None else args.host
     port = bridge_config.port if args.port is None else args.port
 
+    # Preset Manager
+    # preset_pathの優先順: 引数、環境変数、voicevox_dir、実行ファイルのディレクトリ
+    # ファイルの存在に関わらず、優先順で最初に指定されたパスをプリセットファイルとして使用する
+    preset_path: Path | None = args.preset_file
+    if preset_path is None:
+        # 引数 --preset_file の指定がない場合
+        env_preset_path = os.getenv("VV_PRESET_FILE")
+        if env_preset_path is not None and len(env_preset_path) != 0:
+            # 環境変数 VV_PRESET_FILE の指定がある場合
+            preset_path = Path(env_preset_path)
+        else:
+            # 環境変数 VV_PRESET_FILE の指定がない場合
+            preset_path = root_dir / "presets.yaml"
+
+    preset_manager = PresetManager(
+        preset_path=preset_path,
+    )
+
     uvicorn.run(
         generate_app(
             synthesis_engines,
             latest_core_version,
             setting_loader,
+            preset_manager=preset_manager,
             root_dir=root_dir,
             cors_policy_mode=cors_policy_mode,
             allow_origin=allow_origin,
