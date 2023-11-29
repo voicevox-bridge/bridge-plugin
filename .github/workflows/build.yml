@@ -470,6 +470,7 @@ jobs:
             --include-data-file="default_setting.yml=./" \
             --include-data-dir="speaker_info=./speaker_info" \
             --include-data-dir="engine_manifest_assets=./engine_manifest_assets" \
+            --noinclude-dlls="torch/*" \
             --msvc=14.3 \
             --follow-imports \
             --no-prefer-source-code \
