@@ -104,7 +104,7 @@ jobs:
       - name: declare variables
         id: vars
         run: |
-          echo "package_name=voicevox_engine-${{ matrix.target }}-${{ needs.config.outputs.version }}" >> $GITHUB_OUTPUT
+          echo "package_name=bridge_plugin-${{ matrix.target }}-${{ needs.config.outputs.version }}" >> $GITHUB_OUTPUT
 
       - uses: actions/checkout@v3
 
