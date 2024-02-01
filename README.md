@@ -7,8 +7,11 @@
 [![Coverage Status](https://coveralls.io/repos/github/voicevox-bridge/bridge-plugin/badge.svg)](https://coveralls.io/github/voicevox-bridge/bridge-plugin)
 
 [ESPnet](https://github.com/espnet/espnet)を使用して作られたモデルを読み込み、[VOICEVOX](https://voicevox.hiroshiba.jp/) の互換のエンジンとして動作させる事ができるソフトウェアです。  
-このリポジトリは、[VOICEVOX Engine](https://github.com/VOICEVOX/voicevox_engine)のフォークです。  
+このリポジトリは、[VOICEVOX Engine](https://github.com/VOICEVOX/voicevox_engine)のフォークであり、本家VOICEVOXとは無関係です。  
+メンテナーは [@takana-v](https://github.com/takana-v) のみとなりますので、本家VOICEVOXのメンテナーやコミッターの方々に本リポジトリについて問い合わせしないようにお願い致します。  
 
+This repository is a fork of [VOICEVOX Engine](https://github.com/VOICEVOX/voicevox_engine) and is unrelated to the original VOICEVOX.  
+The only maintainer is [@takana-v](https://github.com/takana-v), so please do not contact the original VOICEVOX maintainers or committers about this repository.  
 
 ## ライセンス
 
